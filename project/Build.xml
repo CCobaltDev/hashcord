@@ -1,0 +1,98 @@
+<!-- Referenced from https://github.com/Apprentice-Alchemist/hxlua/blob/dev/native%2FBuild.xml and https://github.com/MAJigsaw77/hxdiscord_rpc/blob/main/project/Build.xml -->
+<xml>
+	<pragma once="true" />
+	<set name="HL_INCLUDE" value="${HASHLINK}/include" if="HASHLINK windows" unless="HL_INCLUDE" />
+	<set name="HL_BIN" value="${HASHLINK}" if="HASHLINK windows" unless="HL_BIN" />
+
+	<files id="haxe">
+		<compilerflag value="-I${haxelib:hlhxdiscord_rpc}/project/discord-rpc/include" />
+		<compilerflag value="-DDISCORD_DISABLE_IO_THREAD" if="DISCORD_DISABLE_IO_THREAD" />
+	</files>
+
+	<files id="__main__">
+		<compilerflag value="-I${haxelib:hlhxdiscord_rpc}/project/discord-rpc/include" />
+		<compilerflag value="-DDISCORD_DISABLE_IO_THREAD" if="DISCORD_DISABLE_IO_THREAD" />
+	</files>
+
+	<files id="discord-rpc">
+		<compilerflag value="-I${haxelib:hlhxdiscord_rpc}/project/discord-rpc/include" />
+		<compilerflag value="-DRAPIDJSON_SSE2" if="MSVC_VER" unless="HXCPP_M64" />
+		<compilerflag value="-I${haxelib:hlhxdiscord_rpc}/project/rapidjson/include" />
+		<compilerflag value="-DDISCORD_DISABLE_IO_THREAD" if="DISCORD_DISABLE_IO_THREAD" />
+
+		<section if="windows">
+			<compilerflag value="-DWIN32_LEAN_AND_MEAN" />
+			<compilerflag value="-DNOMCX" />
+			<compilerflag value="-DNOSERVICE" />
+			<compilerflag value="-DNOIME" />
+
+			<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/connection_windows.cpp" />
+			<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/discord_register_windows.cpp" />
+		</section>
+
+		<section if="macos || linux">
+			<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/connection_unix.cpp" />
+
+			<section if="macos">
+				<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/discord_register_macos.mm" />
+			</section>
+
+			<section if="linux">
+				<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/discord_register_linux.cpp" />
+			</section>
+		</section>
+
+		<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/discord_rpc.cpp" />
+		<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/rpc_connection.cpp" />
+		<file name="${haxelib:hlhxdiscord_rpc}/project/discord-rpc/src/serialization.cpp" />
+	</files>
+
+	<files id="extension">
+		<compilerflag value="-I${HL_INCLUDE}" if="HL_INCLUDE" />
+		<compilerflag value="-I${haxelib:hlhxdiscord_rpc}/project/discord-rpc/include" />
+		<file name="${this_dir}/extension.cpp" />
+	</files>
+
+	<target id="haxe">
+		<section if="mingw">
+			<lib name="-lpsapi" />
+			<lib name="-ladvapi32" />
+		</section>
+
+		<section if="windows" unless="mingw">
+			<lib name="psapi.lib" />
+			<lib name="advapi32.lib" />
+		</section>
+
+		<section if="mingw || macos || linux">
+			<lib name="-lpthread" />
+		</section>
+
+		<files id="discord-rpc" />
+	</target>
+
+	<target id="default" output="discord_rpc" toolid="dll" tool="linker">
+		<section if="mingw">
+			<lib name="-lpsapi" />
+			<lib name="-ladvapi32" />
+		</section>
+
+		<section if="windows" unless="mingw">
+			<lib name="psapi.lib" />
+			<lib name="advapi32.lib" />
+		</section>
+
+		<section if="mingw || macos || linux">
+			<lib name="-lpthread" />
+		</section>
+
+		<files id="discord-rpc" />
+		<files id="extension" />
+		<libpath name="${HL_BIN}" if="windows" />
+		<libpath name="/usr/local/lib" if='macos' />
+		<lib name="libhl.lib" if="windows" />
+		<lib name="-lhl" unless="windows" />
+		<ext value=".hdll" />
+		<outdir name="out" />
+	</target>
+</xml>
