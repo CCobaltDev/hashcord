@@ -1,6 +1,6 @@
 #define HL_NAME(n) hlhxdiscord_rpc_##n
 #include "hl.h"
-#include <iostream>
+#include <cstring>
 #include "discord_rpc.hpp"
 
 typedef struct
@@ -45,7 +45,7 @@ void setHandlers(vhandlers *handlers)
 	{
 		hl_add_root(handlers->ready);
 		discordHandlers->ready = [](const DiscordUser *request) {
-
+			
 		};
 	}
 }

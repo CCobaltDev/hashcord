@@ -50,6 +50,7 @@ class DiscordRichPresence {
 }
 
 @:publicFields
+@:structInit
 class DiscordUser {
 	var userID:String;
 	var username:String;
@@ -82,10 +83,37 @@ class Discord {
 
 	static function RegisterSteamGame(applicationID:String, steamID:String):Void {}
 
-	static function Initialize(applicationID:String, handlers:DiscordEventHandlers, autoRegister:Int, optionalSteamID:String):Void {}
+	static function Initialize(applicationID:String, handlers:DiscordEventHandlers, autoRegister:Int, optionalSteamID:String):Void {
+		var rpcHandlers = new RPCEventHandlers();
+		if (handlers.ready != null)
+			rpcHandlers.ready = (userID, username, globalName, discriminator, avatar, premiumType, bot) -> handlers.ready({
+				userID: userID,
+				username: username,
+				globalName: globalName,
+				discriminator: discriminator,
+				avatar: avatar,
+				premiumType: premiumType,
+				bot: bot
+			});
+		rpcHandlers.disconnected = handlers.disconnected;
+		rpcHandlers.errored = handlers.errored;
+		rpcHandlers.joinGame = handlers.joinGame;
+		rpcHandlers.spectateGame = handlers.spectateGame;
+		if (handlers.joinRequest != null)
+			rpcHandlers.joinRequest = (userID, username, globalName, discriminator, avatar, premiumType, bot) -> handlers.joinRequest({
+				userID: userID,
+				username: username,
+				globalName: globalName,
+				discriminator: discriminator,
+				avatar: avatar,
+				premiumType: premiumType,
+				bot: bot
+			});
+		Discord_RPC.Initialize(applicationID, rpcHandlers, autoRegister, optionalSteamID);
+	}
 
 	static function Shutdown():Void {}
-	
+
 	static function RunCallbacks():Void {}
 
 	#if DISCORD_DISABLE_IO_THREAD
@@ -102,5 +130,19 @@ class Discord {
 }
 
 @:publicFields
+private class RPCEventHandlers {
+	var ready:(userID:String, username:String, globalName:String, discriminator:String, avatar:String, premiumType:DiscordPremiumType, bot:Bool) -> Void;
+	var disconnected:(errorCode:Int, message:String) -> Void;
+	var errored:(errorCode:Int, message:String) -> Void;
+	var joinGame:(joinSecret:String) -> Void;
+	var spectateGame:(spectateSecret:String) -> Void;
+	var joinRequest:(userID:String, username:String, globalName:String, discriminator:String, avatar:String, premiumType:DiscordPremiumType, bot:Bool) -> Void;
+
+	function new() {}
+}
+
+@:publicFields
 @:hlNative('discord_rpc')
-private class Discord_RPC {}
+private class Discord_RPC {
+	static function Initialize(applicationID:String, handlers:RPCEventHandlers, autoRegister:Int, optionalSteamID:String):Void {}
+}
