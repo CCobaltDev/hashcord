@@ -56,8 +56,6 @@ void setHandlers(vhandlers *handlers)
 		hl_add_root(haxeHandlers->ready);
 		discordHandlers->ready = [](const DiscordUser *request)
 		{
-			std::cout << "ready :3\n";
-
 			vdynamic args[7];
 			vdynamic *vargs[7] = {
 				&args[0],
