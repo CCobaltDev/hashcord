@@ -13,6 +13,8 @@ Haxe/HL bindings for `discord_rpc` based on [hldiscord_rpc](https://github.com/D
 
 ### Sample
 
+<!-- i know its haxe, not typescript -->
+
 ```ts
 package;
 
