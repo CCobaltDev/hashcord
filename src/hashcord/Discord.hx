@@ -75,12 +75,12 @@ class DiscordUser
 @:structInit
 class DiscordEventHandlers
 {
-	var ready:(request:DiscordUser) -> Void = (_) -> {};
-	var disconnected:(errorCode:Int, message:String) -> Void = (_, _) -> {};
-	var errored:(errorCode:Int, message:String) -> Void = (_, _) -> {};
-	var joinGame:(joinSecret:String) -> Void = (_) -> {};
-	var spectateGame:(spectateSecret:String) -> Void = (_) -> {};
-	var joinRequest:(request:DiscordUser) -> Void = (_) -> {};
+	var ready:(request:DiscordUser) -> Void = null;
+	var disconnected:(errorCode:Int, message:String) -> Void = null;
+	var errored:(errorCode:Int, message:String) -> Void = null;
+	var joinGame:(joinSecret:String) -> Void = null;
+	var spectateGame:(spectateSecret:String) -> Void = null;
+	var joinRequest:(request:DiscordUser) -> Void = null;
 
 	function new() {}
 }
