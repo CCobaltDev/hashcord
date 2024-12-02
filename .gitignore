@@ -1,3 +1,5 @@
 project/obj
 project/out
-.vscode
+.vscode/*
+*.code-workspace
+!.vscode/settings.json

@@ -1,0 +1,22 @@
+{
+	"name": "hashcord",
+	"url": "https://github.com/CCobaltDev/hashcord/",
+	"license": "MIT",
+	"tags": [
+		"discord",
+		"rpc",
+		"haxe",
+		"Hashlink",
+		"extern",
+		"native"
+	],
+	"description": "Haxe/HL bindings for discord_rpc based on hldiscord_rpc and hxdiscord_rpc",
+	"version": "0.1.0",
+	"classPath": "src",
+	"releasenote": "Initial Release",
+	"contributors": [
+		"CobaltBar"
+	],
+	"dependencies": {"hxcpp": ""},
+	"main": "hashcord.Build"
+}

@@ -39,8 +39,9 @@
 
 	<files id="extension">
 		<compilerflag value="-I${HL_INCLUDE}" if="HL_INCLUDE" />
+		<compilerflag value="-DDISCORD_DISABLE_IO_THREAD" if="DISCORD_DISABLE_IO_THREAD" />
 		<compilerflag value="-I${haxelib:hashcord}/project/discord-rpc/include" />
-		<file name="${this_dir}/extension.cpp" />
+		<file name="${haxelib:hashcord}/project/extension.cpp" />
 	</files>
 
 	<target id="default" output="discord_rpc" toolid="dll" tool="linker">

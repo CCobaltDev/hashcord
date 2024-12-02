@@ -1,7 +1,6 @@
-#define HL_NAME(n) hlhxdiscord_rpc_##n
+#define HL_NAME(n) hashcord_##n
 #include "hl.h"
 #include <cstring>
-#include <iostream>
 #include "discord_rpc.hpp"
 
 // uhh ok c++ formatter
@@ -13,24 +12,7 @@
 					_FUN(_VOID, _BYTES)                        \
 						_FUN(_VOID, _BYTES _BYTES _BYTES _BYTES _BYTES _I32 _BOOL))
 
-#define _PRESENCE _OBJ(                                                 \
-	_I32                                                                \
-		_STRING                                                         \
-			_STRING                                                     \
-				_I64                                                    \
-					_I64                                                \
-						_STRING                                         \
-							_STRING                                     \
-								_STRING                                 \
-									_STRING                             \
-										_STRING                         \
-											_I32                        \
-												_I32                    \
-													_I32                \
-														_STRING         \
-															_STRING     \
-																_STRING \
-																	_BOOL)
+#define _PRESENCE _OBJ(_I32 _STRING _STRING _I64 _I64 _STRING _STRING _STRING _STRING _STRING _I32 _I32 _I32 _ARR _STRING _STRING _STRING _BOOL)
 
 typedef struct
 {
@@ -59,12 +41,19 @@ typedef struct
 	int partySize;
 	int partyMax;
 	DiscordActivityPartyPrivacy partyPrivacy;
-	// todo buttons
+	varray *buttons;
 	vstring *matchSecret;
 	vstring *joinSecret;
 	vstring *spectateSecret;
 	bool instance;
 } vpresence;
+
+typedef struct
+{
+	hl_type *t;
+	vstring *label;
+	vstring *url;
+} vbutton;
 
 vhandlers *haxeHandlers = nullptr;
 DiscordEventHandlers *discordHandlers = nullptr;
@@ -171,8 +160,8 @@ void setHandlers(vhandlers *handlers)
 			vdynamic args[1];
 			vdynamic *vargs[1] = {&args[0]};
 
-			args[1].t = &hlt_bytes;
-			args[1].v.bytes = (vbyte *)joinSecret;
+			args[0].t = &hlt_bytes;
+			args[0].v.bytes = (vbyte *)joinSecret;
 			hl_dyn_call(haxeHandlers->joinGame, vargs, 1);
 		};
 	}
@@ -185,8 +174,8 @@ void setHandlers(vhandlers *handlers)
 			vdynamic args[1];
 			vdynamic *vargs[1] = {&args[0]};
 
-			args[1].t = &hlt_bytes;
-			args[1].v.bytes = (vbyte *)spectateSecret;
+			args[0].t = &hlt_bytes;
+			args[0].v.bytes = (vbyte *)spectateSecret;
 			hl_dyn_call(haxeHandlers->spectateGame, vargs, 1);
 		};
 	}
@@ -252,6 +241,16 @@ void setPresence(vpresence *presence)
 	discordPresence->partySize = presence->partySize;
 	discordPresence->partyMax = presence->partyMax;
 	discordPresence->partyPrivacy = presence->partyPrivacy;
+
+	for (int i = 0; i < presence->buttons->size; i++)
+	{
+		auto obj = hl_aptr(presence->buttons, vbutton *)[i];
+		if (i > 1 || obj == nullptr)
+			break;
+		discordPresence->buttons[i].label = (const char *)hl_to_utf8(obj->label->bytes);
+		discordPresence->buttons[i].url = (const char *)hl_to_utf8(obj->url->bytes);
+	}
+
 	if (presence->matchSecret != nullptr)
 		discordPresence->matchSecret = (const char *)hl_to_utf8(presence->matchSecret->bytes);
 	if (presence->joinSecret != nullptr)
@@ -281,6 +280,8 @@ HL_PRIM void HL_NAME(shutdown)()
 {
 	delete discordHandlers;
 	delete discordPresence;
+	discordHandlers = nullptr;
+	discordPresence = nullptr;
 	Discord_Shutdown();
 }
 
@@ -294,8 +295,6 @@ HL_PRIM void HL_NAME(update_connection)()
 {
 	Discord_UpdateConnection();
 }
-#else
-#pragma message("so im NOT insane")
 #endif
 
 HL_PRIM void HL_NAME(update_presence)(vpresence *presence)
