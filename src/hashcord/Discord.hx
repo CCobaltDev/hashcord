@@ -33,25 +33,26 @@ enum abstract DiscordActivityJoinRequestReply(Int)
 }
 
 @:publicFields
+@:structInit
 class DiscordRichPresence
 {
 	var type:DiscordActivityType = Playing;
-	var state:String;
-	var details:String;
+	var state:String = '';
+	var details:String = '';
 	var startTimestamp:Int64 = 0i64;
 	var endTimestamp:Int64 = 0i64;
-	var largeImageKey:String;
-	var largeImageText:String;
-	var smallImageKey:String;
-	var smallImageText:String;
-	var partyID:String;
+	var largeImageKey:String = '';
+	var largeImageText:String = '';
+	var smallImageKey:String = '';
+	var smallImageText:String = '';
+	var partyID:String = '';
 	var partySize:Int = 0;
 	var partyMax:Int = 0;
 	var partyPrivacy:DiscordActivityPartyPrivacy = Private;
 	var buttons = new Array<DiscordButton>();
-	var matchSecret:String;
-	var joinSecret:String;
-	var spectateSecret:String;
+	var matchSecret:String = '';
+	var joinSecret:String = '';
+	var spectateSecret:String = '';
 	var instance:Bool = false;
 
 	function new() {}
@@ -71,23 +72,25 @@ class DiscordUser
 }
 
 @:publicFields
+@:structInit
 class DiscordEventHandlers
 {
-	var ready:(request:DiscordUser) -> Void;
-	var disconnected:(errorCode:Int, message:String) -> Void;
-	var errored:(errorCode:Int, message:String) -> Void;
-	var joinGame:(joinSecret:String) -> Void;
-	var spectateGame:(spectateSecret:String) -> Void;
-	var joinRequest:(request:DiscordUser) -> Void;
+	var ready:(request:DiscordUser) -> Void = null;
+	var disconnected:(errorCode:Int, message:String) -> Void = null;
+	var errored:(errorCode:Int, message:String) -> Void = null;
+	var joinGame:(joinSecret:String) -> Void = null;
+	var spectateGame:(spectateSecret:String) -> Void = null;
+	var joinRequest:(request:DiscordUser) -> Void = null;
 
 	function new() {}
 }
 
 @:publicFields
+@:structInit
 class DiscordButton
 {
-	var label:String;
-	var url:String;
+	var label:String = '';
+	var url:String = '';
 
 	function new() {}
 }
