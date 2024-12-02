@@ -89,8 +89,8 @@ class DiscordEventHandlers
 @:structInit
 class DiscordButton
 {
-	var label:String;
-	var url:String;
+	var label:String = '';
+	var url:String = '';
 
 	function new() {}
 }
